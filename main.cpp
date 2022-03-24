@@ -2,8 +2,8 @@
 #include "matrice.h"
 
 int main() {
-    matrice *A=new matrice(4,1);
-    matrice *B=new matrice(1,4);
+    matrice *A=new matrice(3,2);
+    matrice *B=new matrice(2,3);
     matrice *C;
     A->initialize();
     A->print();

@@ -4,11 +4,11 @@
 #include "iostream"
 #include "matrice.h"
 
-matrice::matrice(int m, int n):ncolonne(m),nrighe(n){
+matrice::matrice(int m, int n):nrighe(m),ncolonne(n){
 
-    buffer=new double* [ncolonne];
+    buffer=new double* [nrighe];
     for(int i=0;i<nrighe;i++){
-        buffer[i]=new double[nrighe];
+        buffer[i]=new double[ncolonne];
     }
 }
 
@@ -16,7 +16,7 @@ matrice::matrice(int m, int n):ncolonne(m),nrighe(n){
 void matrice::initialize() {
     for(int i=0;i<nrighe;i++){
         for(int j=0;j<ncolonne;j++){
-            std::cout<<"inserisci elemento["<<i<<"]["<<j<<"]"<<std::endl;
+            std::cout<<"inserisci elemento["<<i+1<<"]["<<j+1<<"]"<<std::endl;
             std::cin>>buffer[i][j];
         }
     }
@@ -28,6 +28,7 @@ void matrice::print() const{
         for(int j=0;j<ncolonne;j++){
             std::cout<<buffer[i][j]<<"   ";
         }
+
         std::cout<<std::endl;
     }
     std::cout<<std::endl;

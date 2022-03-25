@@ -8,23 +8,37 @@
 
 class matrice {
 private:
-    const int nrighe;
-    const int ncolonne;
+    int nrighe;
+    int ncolonne;
     double** buffer;
 
 
 public:
     matrice(int m,int n);
 
+    matrice(matrice* that);
+
+    ~matrice();
+
     void initialize();
 
     void print() const;
 
+
+
+    matrice* operator=(matrice* that);
+
     friend matrice* operator+(matrice left, matrice right);
 
-    friend matrice* operator*(matrice left, matrice righr);
+    friend matrice* operator*(matrice left, matrice right);
+
+    matrice* operator^(int exp);
 
 
+
+private:
+   void copy_helper(matrice* that);
+   void cleaning_helper();
 };
 
 

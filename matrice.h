@@ -22,7 +22,11 @@ public:
 
     void initialize();
 
+    matrice* lad();
+
     void print() const;
+
+
 
 
 

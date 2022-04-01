@@ -3,6 +3,7 @@
 //
 #include "iostream"
 #include "matrice.h"
+const double eps=0.00000000001;
 
 matrice::matrice(int m, int n):nrighe(m),ncolonne(n){
 
@@ -19,6 +20,42 @@ matrice::matrice(matrice *that) {
 matrice::~matrice() {
 
     //cleaning_helper();
+}
+
+ matrice* matrice::lad() {
+
+    matrice* res = new matrice(*this);
+    int npassi=0;
+
+    while(npassi<nrighe) {
+
+        //_______________scambio righe
+        int maxrow = npassi;
+        for (int i = npassi; i < nrighe; i++) {
+            if (std::abs(res->buffer[i][npassi]) > res->buffer[maxrow][npassi])
+                maxrow = i;
+        }
+        double *tmp;
+        tmp = res->buffer[npassi];
+        res->buffer[npassi] = res->buffer[maxrow];
+        res->buffer[maxrow] = tmp;
+
+        //_______________somma righe
+        if (res->buffer[npassi][npassi]>eps||buffer[npassi][npassi]<-eps) {
+            double mul;
+            for (int i = npassi + 1; i < nrighe; i++) {
+                mul = res->buffer[i][npassi] / res->buffer[npassi][npassi];
+
+                for (int j = npassi; j < ncolonne; j++) {
+                    res->buffer[i][j] = res->buffer[i][j] - (res->buffer[npassi][j] * mul);
+                }
+            }
+        }
+
+    npassi++;
+    }
+
+    return res;
 }
 
 void matrice::copy_helper(matrice *that) {
@@ -61,7 +98,10 @@ void matrice::print() const{
     std::cout<<std::endl;
     for(int i=0;i<nrighe;i++){
         for(int j=0;j<ncolonne;j++){
-            std::cout<<buffer[i][j]<<"   ";
+            if(buffer[i][j]>eps||buffer[i][j]<-eps)
+                std::cout<<buffer[i][j]<<"   ";
+            else
+                std::cout<<0<<"   ";
         }
 
         std::cout<<std::endl;

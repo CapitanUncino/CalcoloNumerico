@@ -19,26 +19,28 @@ matrice::matrice(matrice *that) {
 
 matrice::~matrice() {
 
-    //cleaning_helper();
+    cleaning_helper();
 }
 
- matrice* matrice::lad() {
+ matrice* matrice::lad(int *nswaps) {
 
     matrice* res = new matrice(*this);
     int npassi=0;
+    *nswaps=0;
 
     while(npassi<nrighe) {
 
         //_______________scambio righe
         int maxrow = npassi;
         for (int i = npassi; i < nrighe; i++) {
-            if (std::abs(res->buffer[i][npassi]) > res->buffer[maxrow][npassi])
+            if (std::abs(res->buffer[i][npassi]) > std::abs(res->buffer[maxrow][npassi]))
                 maxrow = i;
         }
         double *tmp;
         tmp = res->buffer[npassi];
         res->buffer[npassi] = res->buffer[maxrow];
         res->buffer[maxrow] = tmp;
+        (*nswaps)++;
 
         //_______________somma righe
         if (res->buffer[npassi][npassi]>eps||buffer[npassi][npassi]<-eps) {
@@ -58,7 +60,23 @@ matrice::~matrice() {
     return res;
 }
 
-void matrice::copy_helper(matrice *that) {
+double matrice::det(){
+
+
+    matrice *ladder;
+    int nswaps;
+    double det=1;
+    ladder=lad(&nswaps);
+    for(int i=0;i<nrighe;i++){
+        det = det * ladder->buffer[i][i];
+    }
+    if (nswaps%2==1){
+        det = det * -1;
+    }
+    return det;
+}
+
+void matrice::copy_helper(matrice const *that) {
     nrighe=that->nrighe;
     ncolonne=that->ncolonne;
 
@@ -77,11 +95,15 @@ void matrice::copy_helper(matrice *that) {
 
 void matrice::cleaning_helper() {
 
+    std::cout<<" nel posto "<<buffer<<std::endl;
     if (buffer!= nullptr) {
         for (int i =0; i <nrighe; i++) {
-            delete[] buffer[i]; //FIXME fix cleaning_helper and uncomment its calls
+            std::cout<<i<<" nel posto "<<buffer[i]<<std::endl;
+            delete buffer[i]; //FIXME fix cleaning_helper and uncomment its calls
         }
-        delete[] buffer;
+        delete buffer;
+        std::cout<<" fine matrice "<<std::endl;
+        buffer=nullptr;
     }
 }
 
@@ -109,16 +131,16 @@ void matrice::print() const{
     std::cout<<std::endl;
 }
 
-matrice* matrice::operator=(matrice* that){
+matrice& matrice::operator = (const matrice& that){
 
-    if (that==this)return nullptr;
+    //if (&that==this)return nullptr;
 
     cleaning_helper();
-    //copy_helper(that);
-    return this;
+    copy_helper(&that);
+    return *this;
 }
 
-matrice* operator+(matrice left, matrice right){
+matrice* operator+(const matrice left,const matrice right){
 
     if (left.ncolonne!=right.ncolonne||left.nrighe!=right.nrighe)
         return nullptr;
@@ -132,7 +154,7 @@ matrice* operator+(matrice left, matrice right){
     return res;
 }
 
-matrice* operator*(const matrice left, matrice right){
+matrice* operator*(const matrice left,const matrice right){
 
     if (left.ncolonne!=right.nrighe)
         return nullptr;
@@ -155,11 +177,11 @@ matrice* operator*(const matrice left, matrice right){
 matrice* matrice::operator^(int exp) {
     if(nrighe!=ncolonne||exp<1) return nullptr;
     matrice *res=new matrice(nrighe,ncolonne);
-    res=this;
-    for(int i=1;i<exp;i++){
-        res=(*res)*(*this);
-    }
+    *res = *this;
+    for (int i = 1; i < exp; i++)
+        res = (*res) * (*this);
 
     return res;
 }
+
 

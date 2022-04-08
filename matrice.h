@@ -32,6 +32,8 @@ public:
 
     matrice& operator =(const matrice& that);
 
+    matrice* directsolve();
+
     friend matrice* operator+(const matrice left,const matrice right);
 
     friend matrice* operator*(const matrice left,const matrice right);

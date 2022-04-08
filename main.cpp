@@ -2,7 +2,7 @@
 #include "matrice.h"
 
 int main() {
-    matrice *A=new matrice(2,2);
+    matrice *A=new matrice(3,4);
     //matrice *B=new matrice(2,3);
     matrice *C;
     A->initialize();
@@ -11,8 +11,8 @@ int main() {
     //C=A->lad(&nswaps);
     //B->initialize();
     //B->print();
-    C=A;
-    C=(*A)^4;
+
+    C=A->directsolve();
     if(C!= nullptr)
         C->print();
     //double det= A->det();

@@ -76,6 +76,31 @@ double matrice::det(){
     return det;
 }
 
+matrice* matrice::directsolve() {
+
+    matrice *ladder;
+    matrice *solution=new matrice(nrighe,1);
+    int nswaps;
+    double det;
+    double sum;
+
+    ladder = this->lad(&nswaps);
+    det = ladder->det();
+    if (det==0) return nullptr;
+
+    for(int i=nrighe-1;i>=0;i--){
+
+        sum=0;
+        for(int j=i;j<nrighe;j++){
+            sum=sum+ladder->buffer[i][j]*solution->buffer[j][0];
+        }
+        solution->buffer[i][0]=(ladder->buffer[i][ncolonne-1]-sum)/ladder->buffer[i][i];
+
+    }
+
+    return solution;
+}
+
 void matrice::copy_helper(matrice const *that) {
     nrighe=that->nrighe;
     ncolonne=that->ncolonne;
@@ -95,17 +120,17 @@ void matrice::copy_helper(matrice const *that) {
 
 void matrice::cleaning_helper() {
 
-    std::cout<<" nel posto "<<buffer<<std::endl;
+
+
     if (buffer!= nullptr) {
         for (int i =0; i <nrighe; i++) {
-            std::cout<<i<<" nel posto "<<buffer[i]<<std::endl;
-            delete buffer[i]; //FIXME fix cleaning_helper and uncomment its calls
+            delete buffer[i];
         }
         delete buffer;
-        std::cout<<" fine matrice "<<std::endl;
         buffer=nullptr;
     }
 }
+
 
 void matrice::initialize() {
     for(int i=0;i<nrighe;i++){
@@ -133,10 +158,12 @@ void matrice::print() const{
 
 matrice& matrice::operator = (const matrice& that){
 
-    //if (&that==this)return nullptr;
+    if (&that!=this) {
 
-    cleaning_helper();
-    copy_helper(&that);
+        cleaning_helper();
+        copy_helper(&that);
+    }
+
     return *this;
 }
 
@@ -175,13 +202,19 @@ matrice* operator*(const matrice left,const matrice right){
 }
 
 matrice* matrice::operator^(int exp) {
-    if(nrighe!=ncolonne||exp<1) return nullptr;
-    matrice *res=new matrice(nrighe,ncolonne);
-    *res = *this;
-    for (int i = 1; i < exp; i++)
-        res = (*res) * (*this);
 
-    return res;
+    if(nrighe!=ncolonne||exp<1) return nullptr;
+
+    matrice *op1=new matrice(nrighe,ncolonne);
+    matrice *op2=new matrice(nrighe,ncolonne);
+    *op1 = *this;
+    *op2 = *this;
+    for (int i = 1; i < exp; i++) {
+        std::cout<<" nel posto "<<buffer[0]<<std::endl;
+        op1 = (*op2) * (*op1);
+    }
+    return op1;
 }
+
 
 

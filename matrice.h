@@ -32,6 +32,10 @@ public:
 
     matrice& operator =(const matrice& that);
 
+    static matrice* compose(matrice* left, matrice* right);
+
+    matrice* inv() const;
+
     matrice* directsolve() const;
 
     matrice* J_solve (double precision) const;

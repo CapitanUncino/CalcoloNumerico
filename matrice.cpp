@@ -28,8 +28,63 @@ matrice::~matrice() {
     cleaning_helper();
 }
 
+matrice* matrice::compose(matrice *left, matrice *right) {
+
+    if((left!= nullptr && left->nrighe!=right->nrighe)||right== nullptr) return nullptr;
+
+    int leftnrighe,leftncolonne;
+
+    if(left!= nullptr){
+        leftnrighe=left->nrighe;
+        leftncolonne=left->ncolonne;
+    }
+    else{
+        leftnrighe=0;
+        leftncolonne=0;
+    }
+
+    matrice *res = new matrice(right->nrighe,leftncolonne+right->ncolonne);
 
 
+    for(int i=0;i<leftnrighe;i++){
+        for(int j=0;j<leftncolonne;j++){
+
+            res->buffer[i][j]=left->buffer[i][j];
+
+
+        }
+    }
+
+
+    for(int i=0;i<right->nrighe;i++){
+        for(int j=0;j<right->ncolonne;j++){
+
+            res->buffer[i][j+leftncolonne]=right->buffer[i][j];
+
+        }
+    }
+
+
+    if (left!=nullptr)delete(left);
+    delete(right);
+
+    return res;
+}
+
+matrice* matrice::inv() const {
+
+    if (nrighe!=ncolonne||this->det()==0) return nullptr;
+
+    matrice* res;
+
+
+
+
+
+
+
+    return res;
+}
 
  matrice* matrice::lad(int *nswaps) const{
 

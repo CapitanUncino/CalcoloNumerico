@@ -36,6 +36,8 @@ public:
 
     matrice* J_solve (double precision) const;
 
+    matrice* GS_solve (double precision) const;
+
     friend matrice* operator+(const matrice left,const matrice right);
 
     //TODO implement a better difference

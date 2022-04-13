@@ -125,7 +125,7 @@ matrice* matrice::J_solve(double precision) const{
     matrice* tmp=new matrice(nrighe,1);
     double sum;
     double diff;
-    int maxsteps=100;
+    int maxsteps=10000;
     int count=0;
     double scalar_res;
     double scalar_tmp;
@@ -181,6 +181,76 @@ matrice* matrice::J_solve(double precision) const{
     return solution;
 }
 
+
+
+matrice* matrice::GS_solve(double precision) const{
+
+    matrice* solution=new matrice(nrighe,1);
+    matrice* tmp=new matrice(nrighe,1);
+    double sum;
+    double diff;
+    int maxsteps=10000;
+    int count=0;
+    double scalar_res;
+    double scalar_tmp;
+
+
+    //TODO find a better start vector
+    for(int i=0;i<nrighe;i++)
+        tmp->buffer[i][0]=1.0;
+
+    do {
+
+
+        for (int i = nrighe - 1; i >= 0; i--) {
+
+            sum = 0;
+
+            for (int j=nrighe - 1; j > i ;j--) {
+
+                    sum = sum + this->buffer[i][j] * solution->buffer[j][0];
+
+            }
+
+            for (int j=i-1 ; j >= 0; j--) {
+                if(j!=i) {
+                    sum = sum + this->buffer[i][j] * tmp->buffer[j][0];
+                }
+            }
+
+            solution->buffer[i][0] = (this->buffer[i][ncolonne - 1] - sum) / this->buffer[i][i];
+
+        }
+
+
+        sum = 0;
+        for (int i = 0; i < nrighe; i++)
+            sum += pow(tmp->buffer[i][0], 2);
+
+        scalar_tmp = sqrt(sum);
+
+        sum = 0;
+        for (int i = 0; i < nrighe; i++)
+            sum += pow(solution->buffer[i][0], 2);
+
+        scalar_res = sqrt(sum);
+
+        diff = std::abs(scalar_res - scalar_tmp);
+
+        if(isinfl(diff))return nullptr;
+
+
+        *tmp = *solution;
+
+        count++;
+
+
+    } while (diff>precision&&count<maxsteps);
+
+    if (count>=maxsteps) return nullptr;
+
+    return solution;
+}
 
 
 void matrice::copy_helper(matrice const *that) {

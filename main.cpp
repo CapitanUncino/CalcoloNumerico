@@ -12,7 +12,7 @@ int main() {
     //B->initialize();
     //B->print();
 
-    C=A->J_solve(0.01);
+    C=A->GS_solve(0.0001);
     if(C!= nullptr)
         C->print();
     //double det= A->det();

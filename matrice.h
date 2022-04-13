@@ -24,17 +24,22 @@ public:
 
     void initialize();
 
-    matrice* lad(int *nswaps);
+    matrice* lad(int *nswaps) const;
 
-    double det();
+    double det() const;
 
     void print() const;
 
     matrice& operator =(const matrice& that);
 
-    matrice* directsolve();
+    matrice* directsolve() const;
+
+    matrice* J_solve (double precision) const;
 
     friend matrice* operator+(const matrice left,const matrice right);
+
+    //TODO implement a better difference
+    friend matrice* operator-(const matrice left,const matrice right);
 
     friend matrice* operator*(const matrice left,const matrice right);
 

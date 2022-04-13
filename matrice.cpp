@@ -3,6 +3,7 @@
 //
 #include "iostream"
 #include "matrice.h"
+#include "cmath"
 const double eps=0.00000000001;
 
 matrice::matrice(int m, int n):nrighe(m),ncolonne(n){
@@ -13,16 +14,24 @@ matrice::matrice(int m, int n):nrighe(m),ncolonne(n){
     }
 }
 
+
+
+
 matrice::matrice(matrice *that) {
     copy_helper(that);
 }
+
+
 
 matrice::~matrice() {
 
     cleaning_helper();
 }
 
- matrice* matrice::lad(int *nswaps) {
+
+
+
+ matrice* matrice::lad(int *nswaps) const{
 
     matrice* res = new matrice(*this);
     int npassi=0;
@@ -60,7 +69,11 @@ matrice::~matrice() {
     return res;
 }
 
-double matrice::det(){
+
+
+
+
+double matrice::det() const{
 
 
     matrice *ladder;
@@ -76,7 +89,11 @@ double matrice::det(){
     return det;
 }
 
-matrice* matrice::directsolve() {
+
+
+
+
+matrice* matrice::directsolve() const{
 
     matrice *ladder;
     matrice *solution=new matrice(nrighe,1);
@@ -91,7 +108,7 @@ matrice* matrice::directsolve() {
     for(int i=nrighe-1;i>=0;i--){
 
         sum=0;
-        for(int j=i;j<nrighe;j++){
+        for(int j=i+1;j<nrighe;j++){
             sum=sum+ladder->buffer[i][j]*solution->buffer[j][0];
         }
         solution->buffer[i][0]=(ladder->buffer[i][ncolonne-1]-sum)/ladder->buffer[i][i];
@@ -100,6 +117,71 @@ matrice* matrice::directsolve() {
 
     return solution;
 }
+
+
+matrice* matrice::J_solve(double precision) const{
+
+    matrice* solution=new matrice(nrighe,1);
+    matrice* tmp=new matrice(nrighe,1);
+    double sum;
+    double diff;
+    int maxsteps=100;
+    int count=0;
+    double scalar_res;
+    double scalar_tmp;
+
+
+    //TODO find a better start vector
+    for(int i=0;i<nrighe;i++)
+        tmp->buffer[i][0]=1.0;
+
+    do {
+
+
+        for (int i = nrighe - 1; i >= 0; i--) {
+
+            sum = 0;
+            for (int j = 0; j < nrighe; j++) {
+                if(j!=i) {
+                    sum = sum + this->buffer[i][j] * tmp->buffer[j][0];
+                }
+            }
+
+            solution->buffer[i][0] = (this->buffer[i][ncolonne - 1] - sum) / this->buffer[i][i];
+
+        }
+
+
+        sum = 0;
+        for (int i = 0; i < nrighe; i++)
+            sum += pow(tmp->buffer[i][0], 2);
+
+        scalar_tmp = sqrt(sum);
+
+        sum = 0;
+        for (int i = 0; i < nrighe; i++)
+            sum += pow(solution->buffer[i][0], 2);
+
+        scalar_res = sqrt(sum);
+
+        diff = std::abs(scalar_res - scalar_tmp);
+
+        if(isinfl(diff))return nullptr;
+
+
+        *tmp = *solution;
+
+        count++;
+
+
+    } while (diff>precision&&count<maxsteps);
+
+    if (count>=maxsteps) return nullptr;
+
+    return solution;
+}
+
+
 
 void matrice::copy_helper(matrice const *that) {
     nrighe=that->nrighe;
@@ -118,9 +200,10 @@ void matrice::copy_helper(matrice const *that) {
     }
 }
 
+
+
+
 void matrice::cleaning_helper() {
-
-
 
     if (buffer!= nullptr) {
         for (int i =0; i <nrighe; i++) {
@@ -132,6 +215,8 @@ void matrice::cleaning_helper() {
 }
 
 
+
+
 void matrice::initialize() {
     for(int i=0;i<nrighe;i++){
         for(int j=0;j<ncolonne;j++){
@@ -140,6 +225,9 @@ void matrice::initialize() {
         }
     }
 }
+
+
+
 
 void matrice::print() const{
     std::cout<<std::endl;
@@ -156,6 +244,9 @@ void matrice::print() const{
     std::cout<<std::endl;
 }
 
+
+
+
 matrice& matrice::operator = (const matrice& that){
 
     if (&that!=this) {
@@ -166,6 +257,9 @@ matrice& matrice::operator = (const matrice& that){
 
     return *this;
 }
+
+
+
 
 matrice* operator+(const matrice left,const matrice right){
 
@@ -180,6 +274,11 @@ matrice* operator+(const matrice left,const matrice right){
     }
     return res;
 }
+
+
+
+
+
 
 matrice* operator*(const matrice left,const matrice right){
 
@@ -200,6 +299,10 @@ matrice* operator*(const matrice left,const matrice right){
     }
     return res;
 }
+
+
+
+
 
 matrice* matrice::operator^(int exp) {
 

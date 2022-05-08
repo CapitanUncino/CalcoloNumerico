@@ -24,6 +24,8 @@ public:
 
     void initialize();
 
+    void eye();
+
     matrice* lad(int *nswaps) const;
 
     double det() const;

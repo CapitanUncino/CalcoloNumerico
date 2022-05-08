@@ -4,7 +4,7 @@
 #include "iostream"
 #include "matrice.h"
 #include "cmath"
-const double eps=0.00000000001;
+const double eps=0.0000000001;
 
 matrice::matrice(int m, int n):nrighe(m),ncolonne(n){
 
@@ -27,6 +27,32 @@ matrice::~matrice() {
 
     cleaning_helper();
 }
+
+
+
+void matrice::initialize() {
+
+    for(int i=0;i<nrighe;i++){
+        for(int j=0;j<ncolonne;j++){
+            std::cout<<"inserisci elemento["<<i+1<<"]["<<j+1<<"]"<<std::endl;
+            std::cin>>buffer[i][j];
+        }
+    }
+
+}
+
+
+void matrice::eye() {
+
+    for(int i=0;i<nrighe;i++){
+        for(int j=0;j<ncolonne;j++){
+            if(i==j) buffer[i][j]=1;
+            else buffer[i][j]=0;
+        }
+    }
+
+}
+
 
 matrice* matrice::compose(matrice *left, matrice *right) {
 
@@ -65,20 +91,39 @@ matrice* matrice::compose(matrice *left, matrice *right) {
     }
 
 
-    if (left!=nullptr)delete(left);
-    delete(right);
+    //if (left!=nullptr)delete(left);
+    //delete(right);
 
     return res;
 }
 
 matrice* matrice::inv() const {
 
-    if (nrighe!=ncolonne||this->det()==0) return nullptr;
-
-    matrice* res;
 
 
+    if (nrighe!=ncolonne||std::abs(det())<eps) return nullptr;
 
+    matrice* res= nullptr;
+    matrice* tmp= new matrice(0,0);
+    matrice* start;
+    matrice* identity=new matrice(nrighe,1);
+    *tmp=*this;
+    for(int count=0;count<nrighe;count++){
+
+        for(int i=0;i<nrighe;i++){
+            identity->buffer[i][0]=0;
+        }
+        identity->buffer[count][0]=1;
+
+        start=matrice::compose(tmp,identity);
+
+        res=matrice::compose(res,start->directsolve());
+
+        delete(start);
+    }
+
+    delete(identity);
+    delete(tmp);
 
 
 
@@ -131,10 +176,11 @@ matrice* matrice::inv() const {
 double matrice::det() const{
 
 
-    matrice *ladder;
+    matrice *ladder=new matrice(0,0);
+    *ladder=*this;
     int nswaps;
     double det=1;
-    ladder=lad(&nswaps);
+    ladder=ladder->lad(&nswaps);
     for(int i=0;i<nrighe;i++){
         det = det * ladder->buffer[i][i];
     }
@@ -309,6 +355,8 @@ matrice* matrice::GS_solve(double precision) const{
 
 
 void matrice::copy_helper(matrice const *that) {
+
+
     nrighe=that->nrighe;
     ncolonne=that->ncolonne;
 
@@ -342,14 +390,7 @@ void matrice::cleaning_helper() {
 
 
 
-void matrice::initialize() {
-    for(int i=0;i<nrighe;i++){
-        for(int j=0;j<ncolonne;j++){
-            std::cout<<"inserisci elemento["<<i+1<<"]["<<j+1<<"]"<<std::endl;
-            std::cin>>buffer[i][j];
-        }
-    }
-}
+
 
 
 

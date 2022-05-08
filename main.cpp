@@ -2,17 +2,21 @@
 #include "matrice.h"
 
 int main() {
-    matrice *A=new matrice(2,3);
-    matrice *B=new matrice(2,2);
-    matrice *C;
+    matrice *A=new matrice(4,4);
+    //matrice *B=new matrice(2,2);
+    matrice *C= nullptr;
     A->initialize();
     A->print();
-    //int nswaps;
+    //std::cout<<A->det();
+    int nswaps;
     //C=A->lad(&nswaps);
-    B->initialize();
-    B->print();
-    C=matrice::compose(A,B);
-    //C=A->GS_solve(0.0001);
+    //B->initialize();
+    //C=A->lad(&nswaps);
+    //B->print();
+    C=A->inv();
+    //C=C->inv();
+    //C=(*C)*(*A);
+    //C=A->directsolve();
     if(C!= nullptr)
         C->print();
     //double det= A->det();
